@@ -101,6 +101,112 @@ app.put('/v1/controle-musicas/musica/:id', cors(), bodyParseJSON, async function
     response.json(result)
 })
 
+
+
+
+
+
+
+//genero
+app.post('/v1/controle-musicas/genero', cors(), bodyParseJSON, async function (request, response){
+    //Recebe o content type para requisições para validar o formato de dados
+    let contentType = request.headers['content-type']
+    //recebe os dados encaminhados no body da requisição 
+    let dadosBody = request.body
+
+    let result = await controllerMusica.inserirGenero1(dadosBody, contentType)
+
+    response.status(result.status_code)
+    response.json(result)
+    
+})
+
+app.get('/v1/controle-musicas/genero1', cors(), async function(request, response) {
+
+    //Chama a funçao para retornar uma lista de musica
+    let result = await controllerMusica.listarGenero()
+
+    response.status(result.status_code)
+    response.json(result)
+})
+
+app.delete('/v1/controle-musicas/genero/:id', cors(), async function (request, response) {
+    let idGenero = request.params.id
+
+    let result = await controllerMusica.excluirGenero(idGenero)
+
+    response.status(result.status_code)
+    response.json(result)
+})
+
+
+app.get('/v1/controle-musicas/genero/:id', cors(),async function (request, response) {
+    let idGenero = request.params.id
+
+    let result = await controllerMusica.buscarGenero(idGenero)
+
+    response.status(result.status_code)
+    response.json(result)
+})
+
+app.put('/v1/controle-musicas/genero/:id', cors(), bodyParseJSON, async function (request, response) {
+    //recebe o contenttype da requisiçao
+    let contentType = request.headers['content-type']
+
+    // Recebe o id da musica
+    let idMusica = request.params.id
+
+    // Recebe os dados do body
+    let dadosBody = request.body
+
+    let result = await controllerMusica.atualizarGenero(dadosBody,idMusica,contentType)
+    response.status(result.status_code)
+    response.json(result)
+})
+
+
+//artista
+app.post('/v1/controle-musicas/artista', cors(), bodyParseJSON, async function (request, response){
+    //Recebe o content type para requisições para validar o formato de dados
+    let contentType = request.headers['content-type']
+    //recebe os dados encaminhados no body da requisição 
+    let dadosBody = request.body
+
+    let result = await controllerMusica.inserirArtista(dadosBody, contentType)
+
+    response.status(result.status_code)
+    response.json(result)
+    
+})
+app.get('/v1/controle-musicas/artista', cors(), async function(request, response) {
+
+    //Chama a funçao para retornar uma lista de musica
+    let result = await controllerMusica.listarArtista()
+
+    response.status(result.status_code)
+    response.json(result)
+})
+app.get('/v1/controle-musicas/artista/:id', cors(),async function (request, response) {
+    let idArtista = request.params.id
+
+    let result = await controllerMusica.buscarArtista(idArtista)
+
+    response.status(result.status_code)
+    response.json(result)
+})
+app.delete('/v1/controle-musicas/artista/:id', cors(), async function (request, response) {
+    let idArtista = request.params.id
+
+    let result = await controllerMusica.excluirArtista(idArtista)
+
+    response.status(result.status_code)
+    response.json(result)
+})
+
+
+
+
+
 app.listen(8080,function(){
     console.log('Servidor aguardando novas requisições')
 })
