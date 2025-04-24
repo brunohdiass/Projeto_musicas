@@ -2,7 +2,7 @@
  * Objetivo: Arquivo de configuracao do projeto, onde teremos mensagens padronizadas,
  *           variaveis e constante para o projeto.
  * Data: 13/02/25
- * Autor: Kaike Bueno
+ * Autor: Bruno dias
  * Versão: 1.0
  **********************************************************************************/
 

@@ -1,7 +1,7 @@
 /*********************************************************************************************
  * Objetivo: API responsavel pelas requisições do projeto de controle de musicas
  * Data: 13/02/25
- * Autor: Kaike Bueno
+ * Autor: Bruno Dias
  * Versão: 1.0
  * Observações: 
  * *******Para criar a APi precisamos instalar:
@@ -35,6 +35,8 @@ const bodyParseJSON = bodyParse.json()
 //Cria o objeto para criar a API
 const app = express()
 
+
+
 app.use((request, express,response, next)=>{
     response.header('Access-Control-Allow-Origin', '*')
     response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
@@ -42,7 +44,6 @@ app.use((request, express,response, next)=>{
     app.use(cors())
     next()
 })
-
 
 app.post('/v1/controle-musicas/musica', cors(), bodyParseJSON, async function (request, response){
     //Recebe o content type para requisições para validar o formato de dados
@@ -56,8 +57,6 @@ app.post('/v1/controle-musicas/musica', cors(), bodyParseJSON, async function (r
     response.json(result)
     
 })
-
-// EndPoint para retornar lista de musica 
 app.get('/v1/controle-musicas/musica', cors(), async function(request, response) {
 
     //Chama a funçao para retornar uma lista de musica
@@ -66,9 +65,6 @@ app.get('/v1/controle-musicas/musica', cors(), async function(request, response)
     response.status(result.status_code)
     response.json(result)
 })
-
-
-//Endpoint para buscar musica pelo id
 app.get('/v1/controle-musicas/musica/:id', cors(),async function (request, response) {
     let idMusica = request.params.id
 
@@ -77,7 +73,6 @@ app.get('/v1/controle-musicas/musica/:id', cors(),async function (request, respo
     response.status(result.status_code)
     response.json(result)
 })
-
 app.delete('/v1/controle-musicas/musica/:id', cors(), async function (request, response) {
     let idMusica = request.params.id
 
@@ -120,7 +115,6 @@ app.post('/v1/controle-musicas/genero', cors(), bodyParseJSON, async function (r
     response.json(result)
     
 })
-
 app.get('/v1/controle-musicas/genero1', cors(), async function(request, response) {
 
     //Chama a funçao para retornar uma lista de musica
@@ -129,7 +123,6 @@ app.get('/v1/controle-musicas/genero1', cors(), async function(request, response
     response.status(result.status_code)
     response.json(result)
 })
-
 app.delete('/v1/controle-musicas/genero/:id', cors(), async function (request, response) {
     let idGenero = request.params.id
 
@@ -138,8 +131,6 @@ app.delete('/v1/controle-musicas/genero/:id', cors(), async function (request, r
     response.status(result.status_code)
     response.json(result)
 })
-
-
 app.get('/v1/controle-musicas/genero/:id', cors(),async function (request, response) {
     let idGenero = request.params.id
 
@@ -148,18 +139,17 @@ app.get('/v1/controle-musicas/genero/:id', cors(),async function (request, respo
     response.status(result.status_code)
     response.json(result)
 })
-
 app.put('/v1/controle-musicas/genero/:id', cors(), bodyParseJSON, async function (request, response) {
     //recebe o contenttype da requisiçao
     let contentType = request.headers['content-type']
 
     // Recebe o id da musica
-    let idMusica = request.params.id
+    let idGenero = request.params.id
 
     // Recebe os dados do body
     let dadosBody = request.body
 
-    let result = await controllerMusica.atualizarGenero(dadosBody,idMusica,contentType)
+    let result = await controllerMusica.atualizarGenero(dadosBody,idGenero,contentType)
     response.status(result.status_code)
     response.json(result)
 })
@@ -199,6 +189,85 @@ app.delete('/v1/controle-musicas/artista/:id', cors(), async function (request, 
 
     let result = await controllerMusica.excluirArtista(idArtista)
 
+    response.status(result.status_code)
+    response.json(result)
+})
+app.put('/v1/controle-musicas/artista/:id', cors(), bodyParseJSON, async function (request, response) {
+    //recebe o contenttype da requisiçao
+    let contentType = request.headers['content-type']
+
+    // Recebe o id da musica
+    let idArtista = request.params.id
+
+    // Recebe os dados do body
+    let dadosBody = request.body
+
+    let result = await controllerMusica.atualizarArtista(dadosBody,idArtista,contentType)
+    response.status(result.status_code)
+    response.json(result)
+})
+
+
+
+
+
+
+
+
+
+
+//playlist
+
+app.post('/v1/controle-musicas/playlist', cors(), bodyParseJSON, async function (request, response){
+    //Recebe o content type para requisições para validar o formato de dados
+    let contentType = request.headers['content-type']
+    //recebe os dados encaminhados no body da requisição 
+    let dadosBody = request.body
+
+    let result = await controllerMusica.inserirPlaylist(dadosBody, contentType)
+
+    response.status(result.status_code)
+    response.json(result)
+    
+})
+
+app.get('/v1/controle-musicas/playlist', cors(), async function(request, response) {
+    // Chama a função para retornar uma lista de playlists
+    let result = await controllerMusica.listarPlaylist();
+
+    response.status(result.status_code);
+    response.json(result);
+});
+
+app.get('/v1/controle-musicas/playlist/:id', cors(), async function(request, response) {
+    let idPlaylist = request.params.id;
+
+    // Chama a função para buscar a playlist pelo ID
+    let result = await controllerMusica.buscarPlaylist(idPlaylist);
+
+    // Retorna o status e a resposta em JSON
+    response.status(result.status_code);
+    response.json(result);
+});
+app.delete('/v1/controle-musicas/playlist/:id', cors(), async function (request, response) {
+    let idPlaylist = request.params.id
+
+    let result = await controllerMusica.excluirPlaylist(idPlaylist)
+
+    response.status(result.status_code)
+    response.json(result)
+})
+app.put('/v1/controle-musicas/playlist/:id', cors(), bodyParseJSON, async function (request, response) {
+    //recebe o contenttype da requisiçao
+    let contentType = request.headers['content-type']
+
+    // Recebe o id da musica
+    let idPlaylist = request.params.id
+
+    // Recebe os dados do body
+    let dadosBody = request.body
+
+    let result = await controllerMusica.atualizarPlaylist(dadosBody,idPlaylist,contentType)
     response.status(result.status_code)
     response.json(result)
 })

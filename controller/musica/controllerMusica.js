@@ -40,8 +40,6 @@ const inserirMusica = async function(musica, contentType){
     }
 
 }
-
-
 //Função para atualizar uma musica
 const atualizarMusica = async function(musica, id, contentType){
     try {
@@ -90,8 +88,6 @@ const atualizarMusica = async function(musica, id, contentType){
         return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER //500
     }
 }
-
-
 //Função para excluir uma musica
 const excluirMusica = async function(id){
     try {
@@ -122,8 +118,6 @@ const excluirMusica = async function(id){
     }
 
 }
-
-
 //Função para listar todas as musica
 const listarMusica = async function(){
 
@@ -157,8 +151,6 @@ const listarMusica = async function(){
     }
     
 }
-
-
 //Função para buscar uma musica pelo id 
 const buscarMusica = async function(id){
     try {
@@ -190,13 +182,6 @@ const buscarMusica = async function(id){
 
 
 
-
-
-
-
-
-
-//genero
 
 // Função para inserir um gênero
 const inserirGenero1 = async function(genero, contentType){
@@ -369,6 +354,7 @@ const atualizarGenero = async function(genero, id, contentType){
 
 
 
+
 //artista
 // Função para inserir um artista
 const inserirArtista = async function(artista, contentType){
@@ -496,13 +482,13 @@ const atualizarArtista = async function(artista, id, contentType){
                 }else{
                     // validar se o id existe no banco bd
 
-                    let resultGenero = await buscarArtista(id)
+                    let resultArtista = await buscarArtista(id)
 
-                    if (resultGenero.status_code == 200){
+                    if (resultArtista.status_code == 200){
                         //update
                         // Adiciona o atributo ID no JSON e coloca o id da musica que chegou na controller 
-                        genero.id = id
-                        let result = await musicaDAO.updateArtista(genero)
+                        artista.id = id
+                        let result = await musicaDAO.updateArtista(artista)
 
                         if(result){
                             return MESSAGE.SUCCESS_UPDATE_ITEM //200
@@ -510,7 +496,7 @@ const atualizarArtista = async function(artista, id, contentType){
                             return MESSAGE.ERROR_INTERNAL_SERVER_MODEL //500
                         }
 
-                    }else if (resultMusica.status_code == 404){
+                    }else if (resultArtista.status_code == 404){
                         return MESSAGE.ERROR_NOT_FOUND //404
                     }else{
                         return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER //500
@@ -529,6 +515,159 @@ const atualizarArtista = async function(artista, id, contentType){
 
 
 
+//playlist
+
+const inserirPlaylist = async function(playlist, contentType) {
+    try {
+        if (String(contentType).toLowerCase() === 'application/json') {
+            if (
+                playlist.titulo        == undefined || playlist.titulo == ''        || playlist.titulo == null        || playlist.titulo.length > 100 ||
+                playlist.descricao     == undefined || playlist.descricao == ''     || playlist.descricao == null     ||
+                playlist.data_criacao  == undefined || playlist.data_criacao == ''  || playlist.data_criacao == null  ||
+                playlist.imagem        == undefined || playlist.imagem == ''        || playlist.imagem == null        || playlist.imagem.length > 200
+            ) {
+                return MESSAGE.ERROR_REQUIRED_FIEDLS; // 400
+            } else {
+                let resultPlaylist = await musicaDAO.inserirPlaylist(playlist);
+
+                if (resultPlaylist)
+                    return MESSAGE.SUCCESS_CREATED_ITEM; // 201
+                else
+                    return MESSAGE.ERROR_INTERNAL_SERVER_MODEL; // 500
+            }
+        } else {
+            return MESSAGE.ERROR_CONTENT_TYPE; // 415
+        }
+    } catch (error) {
+        return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+    }
+};
+
+const listarPlaylist = async function() {
+    try {
+        let dadosPlaylist = {};
+
+        // Chama a função que retorna todas as playlists
+        let resultPlaylist = await musicaDAO.selectAllPlaylist();
+
+        if (resultPlaylist != false) {
+            dadosPlaylist.status = true;
+            dadosPlaylist.status_code = 200;
+            dadosPlaylist.itens = resultPlaylist.length;
+            dadosPlaylist.playlists = resultPlaylist;
+
+            return dadosPlaylist;
+        } else {
+            return MESSAGE.ERROR_NOT_FOUND; // 404
+        }
+    } catch (error) {
+        console.error('Erro no controller - listarPlaylist:', error);
+        return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+    }
+};
+
+const buscarPlaylist = async function(id) {
+    try {
+        // Validação do ID
+        if (id == '' || id == undefined || id == null || isNaN(id) || id <= 0) {
+            return MESSAGE.ERROR_REQUIRED_FIEDLS; // 400
+        } else {
+            let dadosPlaylist = {};
+            let resultPlaylist = await musicaDAO.selectByIdPlaylist(id);
+
+            if (resultPlaylist && typeof resultPlaylist === 'object') {
+                dadosPlaylist.status = true;
+                dadosPlaylist.status_code = 200;
+                dadosPlaylist.playlist = resultPlaylist;
+                return dadosPlaylist; // 200
+            } else {
+                return MESSAGE.ERROR_NOT_FOUND; // 404
+            }
+        }
+    } catch (error) {
+        return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+    }
+};
+const excluirPlaylist = async function(id){
+    try {
+        if(id =='' || id == undefined || id == null || isNaN(id) || id <= 0){
+            return MESSAGE.ERROR_REQUIRED_FIEDLS //400
+        }else{
+            //Validar se o id existe
+            let resultPlaylist = await buscarPlaylist(id)
+
+            if (resultPlaylist.status_code == 200){
+                //Delete
+                let result = await musicaDAO.deletPlaylist(id)
+                if(result){
+                    return MESSAGE.SUCCESS_DELETED_ITEM //200
+                }else{
+                    return MESSAGE.ERROR_INTERNAL_SERVER_MODEL //500
+                }
+
+            }else if (resultPlaylist.status_code == 404){
+                return MESSAGE.ERROR_NOT_FOUND //404
+            }else{
+                return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER //500
+            }
+        }
+        
+    } catch (error) {
+        return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER //500
+    }
+
+}
+
+const atualizarPlaylist = async function(playlist, id, contentType) {
+    try {
+        if (String(contentType).toLowerCase() === 'application/json') {
+            if (
+                playlist.titulo == undefined || playlist.titulo == '' || playlist.titulo == null || playlist.titulo.length > 100 ||
+                playlist.descricao == undefined || playlist.descricao == '' || playlist.descricao == null ||
+                playlist.foto_capa == undefined || playlist.foto_capa == '' || playlist.foto_capa == null || playlist.foto_capa.length > 200 ||
+                id == undefined || id == '' || id == null || isNaN(id) || id <= 0
+            ) {
+                return MESSAGE.ERROR_REQUIRED_FIEDLS; // 400
+            } else {
+                // Validar se o ID existe no banco de dados
+                let resultPlaylist = await buscarPlaylist(id); // Função que busca a playlist pelo ID
+
+                if (resultPlaylist.status_code === 200) {
+                    // Adiciona o ID ao objeto para o update
+                    playlist.id = id;
+
+                    // Realiza o update
+                    let result = await musicaDAO.updatePlaylist(playlist);
+
+                    if (result) {
+                        return MESSAGE.SUCCESS_UPDATE_ITEM; // 200
+                    } else {
+                        return MESSAGE.ERROR_INTERNAL_SERVER_MODEL; // 500
+                    }
+                } else if (resultPlaylist.status_code === 404) {
+                    return MESSAGE.ERROR_NOT_FOUND; // 404
+                } else {
+                    return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+                }
+            }
+        } else {
+            return MESSAGE.ERROR_CONTENT_TYPE; // 415
+        }
+    } catch (error) {
+        return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER; // 500
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -542,18 +681,31 @@ module.exports = {
     listarMusica,
     buscarMusica,
 
-//genero
+
+
+    //genero
     inserirGenero1,
     listarGenero,
     excluirGenero,
     buscarGenero,
     atualizarGenero,
 
+
+
 //artista
     inserirArtista,
     listarArtista,
     buscarArtista,
     excluirArtista,
-    atualizarArtista
+    atualizarArtista,
+
+
+
+//playlist
+    inserirPlaylist,
+    listarPlaylist,
+    buscarPlaylist,
+    excluirPlaylist,
+    atualizarPlaylist
 
 }
