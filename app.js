@@ -12,6 +12,7 @@ const controllerMusica = require('./controller/musica/controllerMusica.js');
 const controllerGenero = require('./controller/genero/controllerGenero.js');
 const controllerArtista = require('./controller/artista/controllerArtista.js');
 const controllerPlaylist = require('./controller/playlist/conrollerPlaylist.js');  
+const controllerRanking = require('./controller/ranking/controllerRanking.js'); 
 
 const app = express();
 
@@ -132,6 +133,12 @@ app.delete('/v1/controle-musicas/playlist/:id', async (req, res) => {
     const result = await controllerPlaylist.excluirPlaylist(req.params.id);  // Corrigido para controllerPlaylist
     res.status(result.status_code).json(result);
 });
+
+
+
+
+
+
 
 // ==================== INICIALIZAÇÃO DO SERVIDOR ====================
 
