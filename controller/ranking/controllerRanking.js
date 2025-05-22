@@ -9,7 +9,7 @@ const MESSAGE = require('../../modulo/config.js')
 const rankigDAO = require('../../model/DAO/ranking.js')
 
 // Função para inserir uma playlist
-const inserirRanking = async function(playlist, contentType) {
+const inserirPlaylist = async function(playlist, contentType) {
     try {
         if (String(contentType).toLowerCase() === 'application/json') {
             if (

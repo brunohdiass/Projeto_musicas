@@ -12,7 +12,9 @@ const controllerMusica = require('./controller/musica/controllerMusica.js');
 const controllerGenero = require('./controller/genero/controllerGenero.js');
 const controllerArtista = require('./controller/artista/controllerArtista.js');
 const controllerPlaylist = require('./controller/playlist/conrollerPlaylist.js');  
-const controllerRanking = require('./controller/ranking/controllerRanking.js'); 
+const controllerTipoMusica = require('./controller/tipo_musica/controllerTipoMusica.js'); 
+const controllerAlbum = require('./controller/album/controllerAlbum.js')
+
 
 const app = express();
 
@@ -131,6 +133,66 @@ app.put('/v1/controle-musicas/playlist/:id', async (req, res) => {
 
 app.delete('/v1/controle-musicas/playlist/:id', async (req, res) => {
     const result = await controllerPlaylist.excluirPlaylist(req.params.id);  // Corrigido para controllerPlaylist
+    res.status(result.status_code).json(result);
+});
+
+
+// ==================== ROTAS DE TIPO DE MÚSICA ====================
+
+
+app.post('/v1/controle-musicas/tipo-musica', async (req, res) => {
+    const result = await controllerTipoMusica.inserirTipoMusica(req.body, req.headers['content-type'])
+    res.status(result.status_code).json(result)
+})
+
+app.get('/v1/controle-musicas/tipo-musica', async (req, res) => {
+    const result = await controllerTipoMusica.listarTipoMusica()
+    res.status(result.status_code).json(result)
+})
+
+app.get('/v1/controle-musicas/tipo-musica/:id', async (req, res) => {
+    const result = await controllerTipoMusica.buscarTipoMusica(req.params.id)
+    res.status(result.status_code).json(result)
+})
+
+app.put('/v1/controle-musicas/tipo-musica/:id', async (req, res) => {
+    const result = await controllerTipoMusica.atualizarTipoMusica(req.body, req.params.id, req.headers['content-type'])
+    res.status(result.status_code).json(result)
+})
+
+app.delete('/v1/controle-musicas/tipo-musica/:id', async (req, res) => {
+    const result = await controllerTipoMusica.excluirTipoMusica(req.params.id)
+    res.status(result.status_code).json(result)
+})
+
+
+
+
+
+// ==================== ROTAS DE ÁLBUM ====================
+
+app.post('/v1/controle-musicas/album', async (req, res) => {
+    const result = await controllerAlbum.inserirAlbum(req.body, req.headers['content-type']);
+    res.status(result.status_code).json(result);
+});
+
+app.get('/v1/controle-musicas/album', async (req, res) => {
+    const result = await controllerAlbum.listarAlbuns();
+    res.status(result.status_code).json(result);
+});
+
+app.get('/v1/controle-musicas/album/:id', async (req, res) => {
+    const result = await controllerAlbum.buscarAlbum(req.params.id);
+    res.status(result.status_code).json(result);
+});
+
+app.put('/v1/controle-musicas/album/:id', async (req, res) => {
+    const result = await controllerAlbum.atualizarAlbum(req.body, req.params.id, req.headers['content-type']);
+    res.status(result.status_code).json(result);
+});
+
+app.delete('/v1/controle-musicas/album/:id', async (req, res) => {
+    const result = await controllerAlbum.excluirAlbum(req.params.id);
     res.status(result.status_code).json(result);
 });
 
